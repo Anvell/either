@@ -14,7 +14,7 @@ fun <L : Any, R> CoroutineScope.eitherAsync(
         with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
             try {
                 Right(block())
-            } catch (e: BindingException) {
+            } catch (e: BindingCoroutineException) {
                 Left(left)
             }
         }
@@ -35,7 +35,7 @@ private class EitherCoroutineScopeImpl<L : Any>(
         return fold(
             left = {
                 left = it
-                throw BindingException()
+                throw BindingCoroutineException()
             },
             right = { it }
         )
@@ -46,4 +46,4 @@ private class EitherCoroutineScopeImpl<L : Any>(
     }
 }
 
-private class BindingException : Exception()
+private class BindingCoroutineException : Exception()
