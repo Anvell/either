@@ -23,7 +23,10 @@ compileTestKotlin {
 }
 
 dependencies {
+    implementation project(":either")
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
 
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.kotest:kotest-assertions-core-jvm:4.4.3"
