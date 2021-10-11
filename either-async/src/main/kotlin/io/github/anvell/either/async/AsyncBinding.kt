@@ -1,7 +1,11 @@
 @file:Suppress("unused")
 
-package io.github.anvell.either
+package io.github.anvell.either.async
 
+import io.github.anvell.either.Either
+import io.github.anvell.either.Left
+import io.github.anvell.either.Right
+import io.github.anvell.either.fold
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async

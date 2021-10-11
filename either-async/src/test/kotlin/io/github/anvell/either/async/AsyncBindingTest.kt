@@ -1,5 +1,8 @@
-package io.github.anvell.either
+package io.github.anvell.either.async
 
+import io.github.anvell.either.Either
+import io.github.anvell.either.Left
+import io.github.anvell.either.Right
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
