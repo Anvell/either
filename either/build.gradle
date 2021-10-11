@@ -26,6 +26,15 @@ compileTestKotlin {
     }
 }
 
+tasks.named('jar') {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+        )
+    }
+}
+
 dependencies {
     testImplementation "junit:junit:4.13.2"
     testImplementation "io.kotest:kotest-assertions-core-jvm:4.4.3"
