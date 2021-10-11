@@ -1,5 +1,4 @@
 plugins {
-    id "maven-publish"
     id "com.diffplug.spotless" version "5.11.1"
 }
 

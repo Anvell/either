@@ -1,17 +1,16 @@
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.5.21"
-    id 'java-library'
+    id "java-library"
+    id "maven-publish"
 }
 
-group = GROUP
-version = VERSION
+def ArtifactId = "either"
+
+group = ArtifactGroup
+version = ArtifactVersion
 
 repositories {
     mavenCentral()
-}
-
-java {
-    withSourcesJar()
 }
 
 compileKotlin {
@@ -26,12 +25,30 @@ compileTestKotlin {
     }
 }
 
-tasks.named('jar') {
+tasks.named("jar") {
     manifest {
         attributes(
-                'Implementation-Title': project.name,
-                'Implementation-Version': project.version
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version
         )
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier "sources"
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId = ArtifactId
+            groupId = ArtifactGroup
+            version = ArtifactVersion
+
+            from components.java
+            artifact tasks.sourceJar
+        }
     }
 }
 
