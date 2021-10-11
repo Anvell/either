@@ -37,10 +37,10 @@ class Right<out R>(val value: R) : Either<Nothing, R>() {
     }
 }
 
-inline fun <R> eitherCatch(function: () -> R): Either<Exception, R> {
+inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     return try {
-        Right(function())
-    } catch (e: Exception) {
+        Right(block())
+    } catch (e: Throwable) {
         Left(e)
     }
 }
