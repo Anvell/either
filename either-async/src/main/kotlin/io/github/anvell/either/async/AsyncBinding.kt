@@ -35,7 +35,7 @@ inline fun <L : Any, R> CoroutineScope.eitherAsync(
  * using suspendable [bind][EitherCoroutineScope.bind] function.
  */
 suspend inline fun <L : Any, R> either(
-    crossinline block: EitherCoroutineScope<L>.() -> R
+    crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Either<L, R> = coroutineScope {
     with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
         try {
