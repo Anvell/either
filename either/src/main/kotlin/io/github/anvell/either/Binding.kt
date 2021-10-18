@@ -2,8 +2,12 @@
 
 package io.github.anvell.either
 
-fun <L : Any, R> either(
-    block: EitherScope<L>.() -> R
+/**
+ * Allows to compose a set of [Either] values in an imperative way
+ * using [bind][EitherScope.bind] function.
+ */
+inline fun <L : Any, R> either(
+    crossinline block: EitherScope<L>.() -> R
 ): Either<L, R> = with(EitherScopeImpl<L>()) {
     try {
         Right(block())
@@ -16,7 +20,8 @@ interface EitherScope<L : Any> {
     fun <R> Either<L, R>.bind(): R
 }
 
-private class EitherScopeImpl<L : Any> : EitherScope<L> {
+@PublishedApi
+internal class EitherScopeImpl<L : Any> : EitherScope<L> {
     lateinit var left: L
 
     override fun <R> Either<L, R>.bind(): R = fold(

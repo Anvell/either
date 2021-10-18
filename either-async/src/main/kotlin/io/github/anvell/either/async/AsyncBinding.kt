@@ -15,9 +15,9 @@ import kotlin.coroutines.CoroutineContext
  *
  * Result is returned as [Deferred] object.
  */
-fun <L : Any, R> CoroutineScope.eitherAsync(
+inline fun <L : Any, R> CoroutineScope.eitherAsync(
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    block: suspend EitherCoroutineScope<L>.() -> R
+    crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Deferred<Either<L, R>> {
     return async(start = start) {
         with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
@@ -30,12 +30,29 @@ fun <L : Any, R> CoroutineScope.eitherAsync(
     }
 }
 
+/**
+ * Allows to compose a set of [Either] values in an imperative way
+ * using suspendable [bind][EitherCoroutineScope.bind] function.
+ */
+suspend inline fun <L : Any, R> either(
+    crossinline block: EitherCoroutineScope<L>.() -> R
+): Either<L, R> = coroutineScope {
+    with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
+        try {
+            Right(block())
+        } catch (e: BindingCoroutineException) {
+            Left(left)
+        }
+    }
+}
+
 interface EitherCoroutineScope<L : Any> : CoroutineScope {
     fun <R> Either<L, R>.bind(): R
     suspend fun <R> Deferred<Either<L, R>>.bind(): R
 }
 
-private class EitherCoroutineScopeImpl<L : Any>(
+@PublishedApi
+internal class EitherCoroutineScopeImpl<L : Any>(
     override val coroutineContext: CoroutineContext
 ) : EitherCoroutineScope<L> {
     lateinit var left: L
