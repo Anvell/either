@@ -2,6 +2,9 @@
 
 package io.github.anvell.either
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.TimeoutCancellationException
+
 sealed class Either<out L, out R> {
     abstract operator fun component1(): L?
     abstract operator fun component2(): R?
@@ -37,11 +40,23 @@ class Right<out R>(val value: R) : Either<Nothing, R>() {
     }
 }
 
+/**
+ * Calls the specified function [block] and returns its encapsulated result as [Right]
+ * if invocation was successful, catching any [Throwable] exception that was
+ * thrown from the [block] function execution and encapsulating it as [Left].
+ *
+ * In order to avoid breaking structured concurrency of coroutines [CancellationException]
+ * is re-thrown.
+ */
 inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     return try {
         Right(block())
     } catch (e: Throwable) {
-        Left(e)
+        when (e) {
+            is TimeoutCancellationException -> Left(e)
+            is CancellationException -> throw e
+            else -> Left(e)
+        }
     }
 }
 
