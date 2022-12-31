@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 private object TestErrorOne : Exception()
 private object TestErrorTwo : Exception()
 
-class BindingTest {
+class AsyncBindingTest {
 
     @Test
     fun suspendableExpressionsAreProperlyEvaluated() = runTest {
