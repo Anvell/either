@@ -60,12 +60,7 @@ inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     }
 }
 
-inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V): Either<L, V> {
-    return when (this) {
-        is Left -> this
-        is Right -> Right(transform(value))
-    }
-}
+inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V) = mapRight(transform)
 
 inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
     return when (this) {
