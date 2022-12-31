@@ -125,7 +125,10 @@ fun <L, R> Either<L, R>.right(): R? {
 
 fun <L, R> Either<L, R>.unwrap(): R {
     return when (this) {
-        is Left -> error("Failed to unwrap the value!")
+        is Left -> when (value) {
+            is Throwable -> throw value
+            else -> error("Failed to unwrap the value!")
+        }
         is Right -> value
     }
 }

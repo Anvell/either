@@ -1,11 +1,10 @@
 package io.github.anvell.either
 
+import io.github.anvell.either.resources.TestExceptions.TestErrorOne
+import io.github.anvell.either.resources.TestExceptions.TestErrorTwo
 import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertTrue
-
-private object TestErrorOne : Exception()
-private object TestErrorTwo : Exception()
 
 class BindingTest {
 
