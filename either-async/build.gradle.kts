@@ -35,9 +35,19 @@ kotlin {
         }
         getByName("commonTest") {
             dependencies {
-                implementation(libs.kotlin.test)
                 implementation(libs.coroutines.test)
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.kotest.assertions.core)
+            }
+        }
+        getByName("jvmTest") {
+            dependencies {
+                runtimeOnly(libs.kotest.runner.junit5)
             }
         }
     }
+}
+
+tasks.named<Test>("jvmTest") {
+    useJUnitPlatform()
 }

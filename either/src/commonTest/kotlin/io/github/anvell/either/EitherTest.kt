@@ -1,15 +1,14 @@
 package io.github.anvell.either
 
 import io.github.anvell.either.resources.TestExceptions.TestErrorOne
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.core.spec.style.StringSpec
 
-class EitherTest {
+class EitherTest : StringSpec({
 
-    @Test
-    fun leftShouldThrowUnderlyingExceptionWhenUnwrapped() {
+    "Left should throw underlying exception when unwrapped" {
         val a: Either<Exception, Int> = Left(TestErrorOne)
 
-        assertFailsWith(TestErrorOne::class) { a.unwrap() }
+        shouldThrow<TestErrorOne> { a.unwrap() }
     }
-}
+})

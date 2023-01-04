@@ -2,14 +2,13 @@ package io.github.anvell.either
 
 import io.github.anvell.either.resources.TestExceptions.TestErrorOne
 import io.github.anvell.either.resources.TestExceptions.TestErrorTwo
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import kotlin.math.roundToInt
-import kotlin.test.Test
-import kotlin.test.assertTrue
 
-class BindingTest {
+class BindingTest : StringSpec({
 
-    @Test
-    fun expressionsAreProperlyEvaluated() {
+    "Expressions are properly evaluated" {
         val a = Right(1)
         val b = Right(2)
 
@@ -20,16 +19,15 @@ class BindingTest {
             one + two
         }
 
-        assertTrue { result == Right(3) }
+        result shouldBe Right(3)
     }
 
-    @Test
-    fun returnsOnFirstLeftExpression() {
+    "Returns on first left expression" {
         val a: Either<Exception, Int> = Right(1)
         val b: Either<Exception, Int> = Left(TestErrorOne)
         val c: Either<Exception, Int> = Left(TestErrorTwo)
 
-        val result = either {
+        val result = either<Exception, Int> {
             val one = a.bind()
             val two = b.bind()
             val three = c.bind()
@@ -37,16 +35,15 @@ class BindingTest {
             one + two + three
         }
 
-        assertTrue { result == Left(TestErrorOne) }
+        result shouldBe Left(TestErrorOne)
     }
 
-    @Test
-    fun returnsOnFirstLeftExpressionWhenDifferentTypesAreUsed() {
+    "Returns on first left expression when different types are used" {
         val a: Either<Exception, Int> = Right(1)
         val b: Either<Exception, Float> = Left(TestErrorOne)
         val c: Either<Exception, Int> = Left(TestErrorTwo)
 
-        val result = either {
+        val result = either<Exception, Int> {
             val one = a.bind()
             val two = b.bind()
             val three = c.bind()
@@ -54,6 +51,6 @@ class BindingTest {
             one + two.roundToInt() + three
         }
 
-        assertTrue { result == Left(TestErrorOne) }
+        result shouldBe Left(TestErrorOne)
     }
-}
+})

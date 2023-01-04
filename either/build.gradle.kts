@@ -2,6 +2,7 @@
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotest.multiplatform)
     alias(libs.plugins.dokka)
     id("maven-publish")
 }
@@ -36,8 +37,18 @@ kotlin {
         }
         getByName("commonTest") {
             dependencies {
-                implementation(libs.kotlin.test)
+                implementation(libs.kotest.framework.engine)
+                implementation(libs.kotest.assertions.core)
+            }
+        }
+        getByName("jvmTest") {
+            dependencies {
+                runtimeOnly(libs.kotest.runner.junit5)
             }
         }
     }
+}
+
+tasks.named<Test>("jvmTest") {
+    useJUnitPlatform()
 }
