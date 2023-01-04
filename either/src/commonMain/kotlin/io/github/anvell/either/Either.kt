@@ -104,6 +104,28 @@ inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
     }
 }
 
+/**
+ * Performs [action] on encapsulated [L] value
+ * if this instance represents [Left].
+ *
+ * @return unchanged [Either].
+ */
+inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
+    if (this is Left) action(value)
+    return this
+}
+
+/**
+ * Performs [action] on encapsulated [R] value
+ * if this instance represents [Right].
+ *
+ * @return unchanged [Either].
+ */
+inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
+    if (this is Right) action(value)
+    return this
+}
+
 fun <L, R> Either<L, R>.left(): L? {
     return when (this) {
         is Left -> value
