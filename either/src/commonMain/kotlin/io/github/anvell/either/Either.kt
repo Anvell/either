@@ -5,6 +5,12 @@ package io.github.anvell.either
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 
+/**
+ * Either monad implementation.
+ *
+ * @param L usually represents negative value.
+ * @param R usually represents positive value.
+ */
 sealed class Either<out L, out R> {
     abstract operator fun component1(): L?
     abstract operator fun component2(): R?
@@ -60,8 +66,20 @@ inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     }
 }
 
+/**
+ * Returns result of the given [transform] applied to the encapsulated [R] value
+ * if this instance represents [Right] or the original encapsulated [L] value
+ * if this instance is [Left].
+ *
+ * @see mapRight
+ */
 inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V) = mapRight(transform)
 
+/**
+ * Returns result of the given [transform] applied to the encapsulated [L] value
+ * if this instance represents [Left] or the original encapsulated [R] value
+ * if this instance is [Right].
+ */
 inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
     return when (this) {
         is Left -> Left(transform(value))
@@ -69,6 +87,11 @@ inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
     }
 }
 
+/**
+ * Returns result of the given [transform] applied to the encapsulated [R] value
+ * if this instance represents [Right] or the original encapsulated [L] value
+ * if this instance is [Left].
+ */
 inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
     return when (this) {
         is Left -> this
@@ -76,6 +99,11 @@ inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
     }
 }
 
+/**
+ * Returns result of the given [left] block applied to the encapsulated [L] value
+ * if this instance represents [Left] or result of the [right] block applied
+ * to the encapsulated [R] value if this instance is [Right].
+ */
 inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): Either<E, K> {
     return when (this) {
         is Left -> Left(left(value))
@@ -83,6 +111,11 @@ inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): E
     }
 }
 
+/**
+ * Returns result of the given [transform] applied to the encapsulated [R] value
+ * if this instance represents [Right] or the original encapsulated [L] value
+ * if this instance is [Left].
+ */
 inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
     return when (this) {
         is Left -> this
@@ -90,13 +123,23 @@ inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Eithe
     }
 }
 
-inline fun <L, R> Either<L, R>.or(block: (L) -> Either<L, R>): Either<L, R> {
+/**
+ * Returns result of the given [transform] applied to the encapsulated [L] value
+ * if this instance represents [Left] or the original encapsulated [R] value
+ * if this instance is [Right].
+ */
+inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> {
     return when (this) {
-        is Left -> block(value)
+        is Left -> transform(value)
         is Right -> this
     }
 }
 
+/**
+ * Returns result of [left] for the encapsulated value
+ * if this instance represents [Left] or the result of [right]
+ * if it is [Right].
+ */
 inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
     return when (this) {
         is Left -> left(value)
@@ -126,6 +169,11 @@ inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
     return this
 }
 
+/**
+ * Get encapsulated value [L] if this instance represents [Left] or null.
+ *
+ * @return optional [L] value.
+ */
 fun <L, R> Either<L, R>.left(): L? {
     return when (this) {
         is Left -> value
@@ -133,6 +181,11 @@ fun <L, R> Either<L, R>.left(): L? {
     }
 }
 
+/**
+ * Get encapsulated value [R] if this instance represents [Right] or null.
+ *
+ * @return optional [R] value
+ */
 fun <L, R> Either<L, R>.right(): R? {
     return when (this) {
         is Left -> null
@@ -140,6 +193,9 @@ fun <L, R> Either<L, R>.right(): R? {
     }
 }
 
+/**
+ * Try to get encapsulated value [R] or throw.
+ */
 fun <L, R> Either<L, R>.unwrap(): R {
     return when (this) {
         is Left -> when (value) {
@@ -150,6 +206,9 @@ fun <L, R> Either<L, R>.unwrap(): R {
     }
 }
 
+/**
+ * Get encapsulated value [R] or provide fallback with [transform].
+ */
 inline fun <L, R> Either<L, R>.unwrapOrElse(transform: (L) -> R): R {
     return when (this) {
         is Left -> transform(value)
