@@ -9,7 +9,7 @@ import kotlin.contracts.contract
  * Allows to compose a set of [Either] values in an imperative way
  * using [bind][EitherScope.bind] function.
  */
-inline fun <L : Any, R> either(
+public inline fun <L : Any, R> either(
     crossinline block: EitherScope<L>.() -> R
 ): Either<L, R> {
     contract {
@@ -24,8 +24,8 @@ inline fun <L : Any, R> either(
     }
 }
 
-interface EitherScope<L : Any> {
-    fun <R> Either<L, R>.bind(): R
+public interface EitherScope<L : Any> {
+    public fun <R> Either<L, R>.bind(): R
 }
 
 @PublishedApi

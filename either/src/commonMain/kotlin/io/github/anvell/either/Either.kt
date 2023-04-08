@@ -13,16 +13,16 @@ import kotlin.contracts.contract
  * @param L usually represents negative value.
  * @param R usually represents positive value.
  */
-sealed class Either<out L, out R> {
-    abstract operator fun component1(): L?
-    abstract operator fun component2(): R?
+public sealed class Either<out L, out R> {
+    public abstract operator fun component1(): L?
+    public abstract operator fun component2(): R?
 }
 
-class Left<out L>(val value: L) : Either<L, Nothing>() {
-    override fun component1() = value
-    override fun component2() = null
+public class Left<out L>(public val value: L) : Either<L, Nothing>() {
+    override fun component1(): L = value
+    override fun component2(): Nothing? = null
 
-    override fun hashCode() = value.hashCode()
+    override fun hashCode(): Int = value.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -33,11 +33,11 @@ class Left<out L>(val value: L) : Either<L, Nothing>() {
     }
 }
 
-class Right<out R>(val value: R) : Either<Nothing, R>() {
-    override fun component1() = null
-    override fun component2() = value
+public class Right<out R>(public val value: R) : Either<Nothing, R>() {
+    override fun component1(): Nothing? = null
+    override fun component2(): R = value
 
-    override fun hashCode() = value.hashCode()
+    override fun hashCode(): Int = value.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -56,7 +56,7 @@ class Right<out R>(val value: R) : Either<Nothing, R>() {
  * In order to avoid breaking structured concurrency of coroutines [CancellationException]
  * is re-thrown.
  */
-inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
+public inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
     }
@@ -78,14 +78,14 @@ inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
  *
  * @see mapRight
  */
-inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V) = mapRight(transform)
+public inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V): Either<L, V> = mapRight(transform)
 
 /**
  * Returns result of the given [transform] applied to the encapsulated [L] value
  * if this instance represents [Left] or the original encapsulated [R] value
  * if this instance is [Right].
  */
-inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
+public inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
@@ -100,7 +100,7 @@ inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
  * if this instance represents [Right] or the original encapsulated [L] value
  * if this instance is [Left].
  */
-inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
+public inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
@@ -115,7 +115,7 @@ inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
  * if this instance represents [Left] or result of the [right] block applied
  * to the encapsulated [R] value if this instance is [Right].
  */
-inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): Either<E, K> {
+public inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): Either<E, K> {
     contract {
         callsInPlace(left, InvocationKind.AT_MOST_ONCE)
         callsInPlace(right, InvocationKind.AT_MOST_ONCE)
@@ -131,7 +131,7 @@ inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): E
  * if this instance represents [Right] or the original encapsulated [L] value
  * if this instance is [Left].
  */
-inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
+public inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
@@ -146,7 +146,7 @@ inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Eithe
  * if this instance represents [Left] or the original encapsulated [R] value
  * if this instance is [Right].
  */
-inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> {
+public inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
@@ -161,7 +161,7 @@ inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> 
  * if this instance represents [Left] or the result of [right]
  * if it is [Right].
  */
-inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
+public inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
     contract {
         callsInPlace(left, InvocationKind.AT_MOST_ONCE)
         callsInPlace(right, InvocationKind.AT_MOST_ONCE)
@@ -178,7 +178,7 @@ inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
  *
  * @return unchanged [Either].
  */
-inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
+public inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
@@ -192,7 +192,7 @@ inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
  *
  * @return unchanged [Either].
  */
-inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
+public inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
     contract {
         callsInPlace(action, InvocationKind.AT_MOST_ONCE)
     }
@@ -205,7 +205,7 @@ inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
  *
  * @return optional [L] value.
  */
-fun <L, R> Either<L, R>.left(): L? {
+public fun <L, R> Either<L, R>.left(): L? {
     return when (this) {
         is Left -> value
         is Right -> null
@@ -217,7 +217,7 @@ fun <L, R> Either<L, R>.left(): L? {
  *
  * @return optional [R] value
  */
-fun <L, R> Either<L, R>.right(): R? {
+public fun <L, R> Either<L, R>.right(): R? {
     return when (this) {
         is Left -> null
         is Right -> value
@@ -227,7 +227,7 @@ fun <L, R> Either<L, R>.right(): R? {
 /**
  * Try to get encapsulated value [R] or throw.
  */
-fun <L, R> Either<L, R>.unwrap(): R {
+public fun <L, R> Either<L, R>.unwrap(): R {
     return when (this) {
         is Left -> when (value) {
             is Throwable -> throw value
@@ -240,7 +240,7 @@ fun <L, R> Either<L, R>.unwrap(): R {
 /**
  * Get encapsulated value [R] or provide fallback with [transform].
  */
-inline fun <L, R> Either<L, R>.unwrapOrElse(transform: (L) -> R): R {
+public inline fun <L, R> Either<L, R>.unwrapOrElse(transform: (L) -> R): R {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }

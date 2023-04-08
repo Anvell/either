@@ -21,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
  *
  * Result is returned as [Deferred] object.
  */
-inline fun <L : Any, R> CoroutineScope.eitherAsync(
+public inline fun <L : Any, R> CoroutineScope.eitherAsync(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Deferred<Either<L, R>> {
@@ -43,7 +43,7 @@ inline fun <L : Any, R> CoroutineScope.eitherAsync(
  * Allows to compose a set of [Either] values in an imperative way
  * using suspendable [bind][EitherCoroutineScope.bind] function.
  */
-suspend inline fun <L : Any, R> either(
+public suspend inline fun <L : Any, R> either(
     crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Either<L, R> {
     contract {
@@ -60,9 +60,9 @@ suspend inline fun <L : Any, R> either(
     }
 }
 
-interface EitherCoroutineScope<L : Any> : CoroutineScope {
-    fun <R> Either<L, R>.bind(): R
-    suspend fun <R> Deferred<Either<L, R>>.bind(): R
+public interface EitherCoroutineScope<L : Any> : CoroutineScope {
+    public fun <R> Either<L, R>.bind(): R
+    public suspend fun <R> Deferred<Either<L, R>>.bind(): R
 }
 
 @PublishedApi
