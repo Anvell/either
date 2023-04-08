@@ -22,14 +22,15 @@ public class Left<out L>(public val value: L) : Either<L, Nothing>() {
     override fun component1(): L = value
     override fun component2(): Nothing? = null
 
+    override fun toString(): String = "Either.Left: $value"
+
     override fun hashCode(): Int = value.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as Left<*>
-        if (value != other.value) return false
-        return true
+        return value == other.value
     }
 }
 
@@ -37,14 +38,15 @@ public class Right<out R>(public val value: R) : Either<Nothing, R>() {
     override fun component1(): Nothing? = null
     override fun component2(): R = value
 
+    override fun toString(): String = "Either.Right: $value"
+
     override fun hashCode(): Int = value.hashCode()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
         other as Right<*>
-        if (value != other.value) return false
-        return true
+        return value == other.value
     }
 }
 
