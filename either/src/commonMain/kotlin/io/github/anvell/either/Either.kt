@@ -207,7 +207,7 @@ public inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R>
  *
  * @return optional [L] value.
  */
-public fun <L, R> Either<L, R>.left(): L? {
+public fun <L, R> Either<L, R>.leftOrNull(): L? {
     return when (this) {
         is Left -> value
         is Right -> null
@@ -219,7 +219,7 @@ public fun <L, R> Either<L, R>.left(): L? {
  *
  * @return optional [R] value
  */
-public fun <L, R> Either<L, R>.right(): R? {
+public fun <L, R> Either<L, R>.rightOrNull(): R? {
     return when (this) {
         is Left -> null
         is Right -> value
