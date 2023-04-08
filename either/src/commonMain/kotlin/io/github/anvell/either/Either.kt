@@ -4,6 +4,8 @@ package io.github.anvell.either
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Either monad implementation.
@@ -55,6 +57,9 @@ class Right<out R>(val value: R) : Either<Nothing, R>() {
  * is re-thrown.
  */
 inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
     return try {
         Right(block())
     } catch (e: Throwable) {
@@ -81,6 +86,9 @@ inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V) = mapRight(transform)
  * if this instance is [Right].
  */
 inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> Left(transform(value))
         is Right -> this
@@ -93,6 +101,9 @@ inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V, R> {
  * if this instance is [Left].
  */
 inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> this
         is Right -> Right(transform(value))
@@ -105,6 +116,10 @@ inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
  * to the encapsulated [R] value if this instance is [Right].
  */
 inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): Either<E, K> {
+    contract {
+        callsInPlace(left, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(right, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> Left(left(value))
         is Right -> Right(right(value))
@@ -117,6 +132,9 @@ inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): E
  * if this instance is [Left].
  */
 inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> this
         is Right -> transform(value)
@@ -129,6 +147,9 @@ inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Eithe
  * if this instance is [Right].
  */
 inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> transform(value)
         is Right -> this
@@ -141,6 +162,10 @@ inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either<L, R> 
  * if it is [Right].
  */
 inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
+    contract {
+        callsInPlace(left, InvocationKind.AT_MOST_ONCE)
+        callsInPlace(right, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> left(value)
         is Right -> right(value)
@@ -154,6 +179,9 @@ inline fun <L, R, V> Either<L, R>.fold(left: (L) -> V, right: (R) -> V): V {
  * @return unchanged [Either].
  */
 inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
+    contract {
+        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+    }
     if (this is Left) action(value)
     return this
 }
@@ -165,6 +193,9 @@ inline fun <L, R> Either<L, R>.onLeft(action: (L) -> Unit): Either<L, R> {
  * @return unchanged [Either].
  */
 inline fun <L, R> Either<L, R>.onRight(action: (R) -> Unit): Either<L, R> {
+    contract {
+        callsInPlace(action, InvocationKind.AT_MOST_ONCE)
+    }
     if (this is Right) action(value)
     return this
 }
@@ -210,6 +241,9 @@ fun <L, R> Either<L, R>.unwrap(): R {
  * Get encapsulated value [R] or provide fallback with [transform].
  */
 inline fun <L, R> Either<L, R>.unwrapOrElse(transform: (L) -> R): R {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
     return when (this) {
         is Left -> transform(value)
         is Right -> value

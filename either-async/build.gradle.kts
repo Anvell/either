@@ -26,6 +26,10 @@ kotlin {
     watchosX64()
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
+        }
+
         getByName("commonMain") {
             dependencies {
                 api(project(":either"))

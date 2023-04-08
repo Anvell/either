@@ -6,7 +6,13 @@ import io.github.anvell.either.Either
 import io.github.anvell.either.Left
 import io.github.anvell.either.Right
 import io.github.anvell.either.fold
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -19,6 +25,9 @@ inline fun <L : Any, R> CoroutineScope.eitherAsync(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Deferred<Either<L, R>> {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
     return async(start = start) {
         with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
             try {
@@ -36,12 +45,17 @@ inline fun <L : Any, R> CoroutineScope.eitherAsync(
  */
 suspend inline fun <L : Any, R> either(
     crossinline block: suspend EitherCoroutineScope<L>.() -> R
-): Either<L, R> = coroutineScope {
-    with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
-        try {
-            Right(block())
-        } catch (e: BindingCoroutineException) {
-            Left(left)
+): Either<L, R> {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return coroutineScope {
+        with(EitherCoroutineScopeImpl<L>(coroutineContext)) {
+            try {
+                Right(block())
+            } catch (e: BindingCoroutineException) {
+                Left(left)
+            }
         }
     }
 }

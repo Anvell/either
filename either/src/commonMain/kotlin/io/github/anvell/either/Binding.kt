@@ -2,17 +2,25 @@
 
 package io.github.anvell.either
 
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
+
 /**
  * Allows to compose a set of [Either] values in an imperative way
  * using [bind][EitherScope.bind] function.
  */
 inline fun <L : Any, R> either(
     crossinline block: EitherScope<L>.() -> R
-): Either<L, R> = with(EitherScopeImpl<L>()) {
-    try {
-        Right(block())
-    } catch (e: BindingException) {
-        Left(left)
+): Either<L, R> {
+    contract {
+        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+    }
+    return with(EitherScopeImpl<L>()) {
+        try {
+            Right(block())
+        } catch (e: BindingException) {
+            Left(left)
+        }
     }
 }
 
