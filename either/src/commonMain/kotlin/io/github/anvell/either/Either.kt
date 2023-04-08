@@ -49,15 +49,6 @@ public class Right<out R>(public val value: R) : Either<Nothing, R>() {
 }
 
 /**
- * Returns result of the given [transform] applied to the encapsulated [R] value
- * if this instance represents [Right] or the original encapsulated [L] value
- * if this instance is [Left].
- *
- * @see mapRight
- */
-public inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V): Either<L, V> = mapRight(transform)
-
-/**
  * Returns result of the given [transform] applied to the encapsulated [L] value
  * if this instance represents [Left] or the original encapsulated [R] value
  * if this instance is [Right].
@@ -77,44 +68,13 @@ public inline fun <L, R, V> Either<L, R>.mapLeft(transform: (L) -> V): Either<V,
  * if this instance represents [Right] or the original encapsulated [L] value
  * if this instance is [Left].
  */
-public inline fun <L, R, V> Either<L, R>.mapRight(transform: (R) -> V): Either<L, V> {
+public inline fun <L, R, V> Either<L, R>.map(transform: (R) -> V): Either<L, V> {
     contract {
         callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
     }
     return when (this) {
         is Left -> this
         is Right -> Right(transform(value))
-    }
-}
-
-/**
- * Returns result of the given [left] block applied to the encapsulated [L] value
- * if this instance represents [Left] or result of the [right] block applied
- * to the encapsulated [R] value if this instance is [Right].
- */
-public inline fun <L, R, E, K> Either<L, R>.mapBoth(left: (L) -> E, right: (R) -> K): Either<E, K> {
-    contract {
-        callsInPlace(left, InvocationKind.AT_MOST_ONCE)
-        callsInPlace(right, InvocationKind.AT_MOST_ONCE)
-    }
-    return when (this) {
-        is Left -> Left(left(value))
-        is Right -> Right(right(value))
-    }
-}
-
-/**
- * Returns result of the given [transform] applied to the encapsulated [R] value
- * if this instance represents [Right] or the original encapsulated [L] value
- * if this instance is [Left].
- */
-public inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
-    contract {
-        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
-    }
-    return when (this) {
-        is Left -> this
-        is Right -> transform(value)
     }
 }
 
@@ -130,6 +90,21 @@ public inline fun <L, R> Either<L, R>.or(transform: (L) -> Either<L, R>): Either
     return when (this) {
         is Left -> transform(value)
         is Right -> this
+    }
+}
+
+/**
+ * Returns result of the given [transform] applied to the encapsulated [R] value
+ * if this instance represents [Right] or the original encapsulated [L] value
+ * if this instance is [Left].
+ */
+public inline fun <L, R, V> Either<L, R>.flatMap(transform: (R) -> Either<L, V>): Either<L, V> {
+    contract {
+        callsInPlace(transform, InvocationKind.AT_MOST_ONCE)
+    }
+    return when (this) {
+        is Left -> this
+        is Right -> transform(value)
     }
 }
 
