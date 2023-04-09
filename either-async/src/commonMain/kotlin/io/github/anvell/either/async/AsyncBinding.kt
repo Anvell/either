@@ -23,7 +23,7 @@ import kotlin.coroutines.CoroutineContext
  */
 public inline fun <L : Any, R> CoroutineScope.eitherAsync(
     start: CoroutineStart = CoroutineStart.DEFAULT,
-    crossinline block: suspend EitherCoroutineScope<L>.() -> R
+    @BuilderInference crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Deferred<Either<L, R>> {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
@@ -44,7 +44,7 @@ public inline fun <L : Any, R> CoroutineScope.eitherAsync(
  * using suspendable [bind][EitherCoroutineScope.bind] function.
  */
 public suspend inline fun <L : Any, R> either(
-    crossinline block: suspend EitherCoroutineScope<L>.() -> R
+    @BuilderInference crossinline block: suspend EitherCoroutineScope<L>.() -> R
 ): Either<L, R> {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)

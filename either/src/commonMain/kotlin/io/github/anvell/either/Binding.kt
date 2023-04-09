@@ -10,7 +10,7 @@ import kotlin.contracts.contract
  * using [bind][EitherScope.bind] function.
  */
 public inline fun <L : Any, R> either(
-    crossinline block: EitherScope<L>.() -> R
+    @BuilderInference crossinline block: EitherScope<L>.() -> R
 ): Either<L, R> {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)

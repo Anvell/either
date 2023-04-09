@@ -30,7 +30,10 @@ kotlin {
 
     sourceSets {
         all {
-            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
+            with(languageSettings) {
+                optIn("kotlin.contracts.ExperimentalContracts")
+                optIn("kotlin.experimental.ExperimentalTypeInference")
+            }
         }
 
         getByName("commonMain") {

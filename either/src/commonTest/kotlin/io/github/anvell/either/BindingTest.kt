@@ -9,10 +9,10 @@ import kotlin.math.roundToInt
 class BindingTest : StringSpec({
 
     "Expressions are properly evaluated" {
-        val a = Right(1)
-        val b = Right(2)
+        val a: Either<TestErrorOne, Int> = Right(1)
+        val b: Either<TestErrorOne, Int> = Right(2)
 
-        val result = either<TestErrorOne, Int> {
+        val result = either {
             val one = a.bind()
             val two = b.bind()
 
@@ -27,7 +27,7 @@ class BindingTest : StringSpec({
         val b: Either<Exception, Int> = Left(TestErrorOne)
         val c: Either<Exception, Int> = Left(TestErrorTwo)
 
-        val result = either<Exception, Int> {
+        val result = either {
             val one = a.bind()
             val two = b.bind()
             val three = c.bind()
@@ -43,7 +43,7 @@ class BindingTest : StringSpec({
         val b: Either<Exception, Float> = Left(TestErrorOne)
         val c: Either<Exception, Int> = Left(TestErrorTwo)
 
-        val result = either<Exception, Int> {
+        val result = either {
             val one = a.bind()
             val two = b.bind()
             val three = c.bind()
