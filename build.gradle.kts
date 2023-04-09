@@ -1,4 +1,4 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
+@file:Suppress("DSL_SCOPE_VIOLATION", "SpellCheckingInspection")
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
@@ -10,10 +10,10 @@ plugins {
     alias(libs.plugins.dependency.updates)
 }
 
+val kotlinterId = libs.plugins.kotlinter.get().pluginId
+
 allprojects {
-    apply {
-        plugin("org.jmailen.kotlinter")
-    }
+    apply { plugin(kotlinterId) }
 
     repositories {
         mavenCentral()
@@ -21,10 +21,6 @@ allprojects {
 
     group = properties["ArtifactGroup"].toString()
     version = properties["ArtifactVersion"].toString()
-
-    kotlinter {
-        disabledRules = arrayOf("no-wildcard-imports")
-    }
 }
 
 tasks.withType<DependencyUpdatesTask> {
