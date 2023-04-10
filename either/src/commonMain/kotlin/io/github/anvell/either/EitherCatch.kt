@@ -1,7 +1,7 @@
 package io.github.anvell.either
 
+import io.github.anvell.either.internal.isFatalOrCancellation
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
@@ -19,11 +19,11 @@ public inline fun <R> eitherCatch(block: () -> R): Either<Throwable, R> {
     }
     return try {
         Right(block())
-    } catch (e: Throwable) {
-        when (e) {
-            is TimeoutCancellationException -> Left(e)
-            is CancellationException -> throw e
-            else -> Left(e)
+    } catch (t: Throwable) {
+        if (isFatalOrCancellation(t)) {
+            throw t
+        } else {
+            Left(t)
         }
     }
 }
