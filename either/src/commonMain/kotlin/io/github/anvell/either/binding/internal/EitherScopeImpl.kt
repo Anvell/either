@@ -14,7 +14,7 @@ internal class EitherScopeImpl<L : Any> : EitherScope<L> {
             if (::left.isInitialized.not()) {
                 left = value
             }
-            throw BindingException()
+            throw BindingCancellationException()
         }
         is Right -> value
     }
