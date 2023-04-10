@@ -32,13 +32,15 @@ public interface EitherScope<L : Any> {
 internal class EitherScopeImpl<L : Any> : EitherScope<L> {
     lateinit var left: L
 
-    override fun <R> Either<L, R>.bind(): R = fold(
-        left = {
-            left = it
+    override fun <R> Either<L, R>.bind(): R = when(this) {
+        is Left -> {
+            if (::left.isInitialized.not()) {
+                left = value
+            }
             throw BindingException()
-        },
-        right = { it }
-    )
+        }
+        is Right -> value
+    }
 }
 
 private class BindingException : Exception()
