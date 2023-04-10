@@ -2,6 +2,7 @@
 
 package io.github.anvell.either
 
+import kotlinx.coroutines.CancellationException
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
@@ -43,4 +44,4 @@ internal class EitherScopeImpl<L : Any> : EitherScope<L> {
     }
 }
 
-private class BindingException : Exception()
+private class BindingException : CancellationException(null)
