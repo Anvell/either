@@ -6,7 +6,6 @@ import io.github.anvell.either.Either
 import io.github.anvell.either.Left
 import io.github.anvell.either.Right
 import io.github.anvell.either.binding.internal.BindingCancellationException
-import io.github.anvell.either.binding.internal.EitherScopeImpl
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 

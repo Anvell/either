@@ -1,9 +1,9 @@
-package io.github.anvell.either.binding.internal
+package io.github.anvell.either.binding
 
 import io.github.anvell.either.Either
 import io.github.anvell.either.Left
 import io.github.anvell.either.Right
-import io.github.anvell.either.binding.EitherScope
+import io.github.anvell.either.binding.internal.BindingCancellationException
 
 @PublishedApi
 internal class EitherScopeImpl<L : Any> : EitherScope<L> {
