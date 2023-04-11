@@ -1,7 +1,11 @@
 @file:Suppress("unused")
 
-package io.github.anvell.either
+package io.github.anvell.either.binding
 
+import io.github.anvell.either.Either
+import io.github.anvell.either.Left
+import io.github.anvell.either.Right
+import io.github.anvell.either.binding.internal.BindingCancellationException
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
@@ -18,27 +22,8 @@ public inline fun <L : Any, R> either(
     return with(EitherScopeImpl<L>()) {
         try {
             Right(block())
-        } catch (e: BindingException) {
+        } catch (e: BindingCancellationException) {
             Left(left)
         }
     }
 }
-
-public interface EitherScope<L : Any> {
-    public fun <R> Either<L, R>.bind(): R
-}
-
-@PublishedApi
-internal class EitherScopeImpl<L : Any> : EitherScope<L> {
-    lateinit var left: L
-
-    override fun <R> Either<L, R>.bind(): R = fold(
-        left = {
-            left = it
-            throw BindingException()
-        },
-        right = { it }
-    )
-}
-
-private class BindingException : Exception()
