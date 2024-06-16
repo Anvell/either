@@ -2,25 +2,38 @@
 
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
+import java.util.Base64
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.kotlinter)
     alias(libs.plugins.dependency.updates)
+    id("maven-publish")
+    id("signing")
 }
 
 val kotlinterId = libs.plugins.kotlinter.get().pluginId
 
-allprojects {
-    apply { plugin(kotlinterId) }
-
-    repositories {
-        mavenCentral()
+subprojects {
+    apply {
+        plugin(kotlinterId)
+        plugin("maven-publish")
+        plugin("signing")
     }
 
-    group = properties["ArtifactGroup"].toString()
-    version = properties["ArtifactVersion"].toString()
+    signing {
+        val secretKey = Base64
+            .getDecoder()
+            .decode(properties["anvell.signing.gnupg.key"].toString())
+            .toString(Charsets.UTF_8)
+
+        useInMemoryPgpKeys(
+            secretKey,
+            properties["anvell.signing.gnupg.passphrase"].toString()
+        )
+        sign(publishing.publications)
+    }
 }
 
 tasks.withType<DependencyUpdatesTask> {

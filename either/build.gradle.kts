@@ -4,8 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotest.multiplatform)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.maven.publish)
     id("maven-publish")
 }
+
+group = properties["GROUP"].toString()
+version = properties["VERSION_NAME"].toString()
 
 kotlin {
     explicitApi()
