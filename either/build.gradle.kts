@@ -27,7 +27,6 @@ kotlin {
     watchosArm64()
     watchosSimulatorArm64()
     watchosX64()
-    watchosX86()
 
     sourceSets {
         all {
@@ -69,7 +68,6 @@ kotlin {
             getByName("watchosArm64Main").dependsOn(this)
             getByName("watchosSimulatorArm64Main").dependsOn(this)
             getByName("watchosX64Main").dependsOn(this)
-            getByName("watchosX86Main").dependsOn(this)
         }
     }
 }
