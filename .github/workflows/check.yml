@@ -23,5 +23,10 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
+      - uses: browser-actions/setup-chrome@v1
+        id: setup-chrome
+      - run: |
+          echo "CHROME_BIN=${{ steps.setup-chrome.outputs.chrome-path }}" >> $GITHUB_ENV
+
       - name: Check all modules
         run: ./gradlew check
