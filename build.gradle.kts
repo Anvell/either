@@ -25,12 +25,12 @@ subprojects {
     signing {
         val secretKey = Base64
             .getDecoder()
-            .decode(properties["anvell.signing.gnupg.key"].toString())
+            .decode(properties["anvell_signing_gnupg_key"].toString())
             .toString(Charsets.UTF_8)
 
         useInMemoryPgpKeys(
             secretKey,
-            properties["anvell.signing.gnupg.passphrase"].toString()
+            properties["anvell_signing_gnupg_pass"].toString()
         )
         sign(publishing.publications)
     }

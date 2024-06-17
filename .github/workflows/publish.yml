@@ -1,0 +1,50 @@
+name: Publish to Maven
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    name: Publish on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            tasks: >
+              publishAllPublicationsToMavenCentralRepository
+
+          - os: macos-latest
+            tasks: >
+              publishIosArm64PublicationToMavenCentralRepository
+              publishIosSimulatorArm64PublicationToMavenCentralRepository
+              publishIosX64PublicationToMavenCentralRepository
+              publishMacosArm64PublicationToMavenCentralRepository
+              publishMacosX64PublicationToMavenCentralRepository
+              publishTvosArm64PublicationToMavenCentralRepository
+              publishTvosSimulatorArm64PublicationToMavenCentralRepository
+              publishTvosX64PublicationToMavenCentralRepository
+              publishWatchosArm64PublicationToMavenCentralRepository
+              publishWatchosSimulatorArm64PublicationToMavenCentralRepository
+              publishWatchosX64PublicationToMavenCentralRepository
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: adopt
+          java-version: 11
+
+      - name: Publish with Gradle
+        run: ./gradlew ${{ matrix.tasks }}
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MVN_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MVN_PASSWORD }}
+          ORG_GRADLE_PROJECT_anvell_signing_gnupg_key: ${{ secrets.SIGNING_GNUPG_KEY }}
+          ORG_GRADLE_PROJECT_anvell_signing_gnupg_pass: ${{ secrets.SIGNING_GNUPG_PASS }}
